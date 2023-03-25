@@ -1,3 +1,5 @@
+LIVE URL: https://assignment-9-by-ahsan.netlify.app/
+
 ## এই এসাইনমেন্ট এ যা যা করতে হবেঃ
 
 ✓ আমাদের দেয়া সার্ভারের '/projects' এবং '/teams' route এ হিট করলে project list ও team member list পাওয়া যাবে। আপনাকে project list এবং team list সার্ভার থেকে রিকুয়েষ্ট করে এনে টেমপ্লেট অনুযায়ী ui তে দেখাতে হবে।

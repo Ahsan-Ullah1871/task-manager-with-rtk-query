@@ -72,14 +72,14 @@
     {
       "taskName": " test edit ",
       "teamMember": {
-        "name": "Akash Ahmed",
-        "avatar": "/images/avatars/akash.png",
-        "id": 3
+        "name": "Saad Hasan",
+        "avatar": "/images/avatars/sadh.png",
+        "id": 2
       },
       "project": {
-        "id": 2,
-        "projectName": "Flight Booking",
-        "colorClass": "color-flight"
+        "id": 1,
+        "projectName": "Scoreboard",
+        "colorClass": "color-scoreboard"
       },
       "deadline": "2023-03-31",
       "id": 2,
@@ -132,6 +132,22 @@
       "deadline": "2023-03-30",
       "id": 6,
       "status": "inProgress"
+    },
+    {
+      "taskName": "Iftar party",
+      "teamMember": {
+        "name": "Saad Hasan",
+        "avatar": "/images/avatars/sadh.png",
+        "id": 2
+      },
+      "project": {
+        "id": 2,
+        "projectName": "Flight Booking",
+        "colorClass": "color-flight"
+      },
+      "deadline": "2023-03-31",
+      "id": 7,
+      "status": "pending"
     }
   ]
 }

@@ -1,20 +1,95 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { useGetTasksQuery } from "../../features/tasks/tasksApi";
 import Task from "./Tasks/Task";
 
 const TasksList = () => {
+	const [isSkip, setIsSkip] = useState(true);
+	//selected projects
+	const { selected_projects } = useSelector((state) => state.projects);
+	// search key
+	const { search_key } = useSelector((state) => state.task);
+
+	//handle search
+	const handleSearch = (task) => {
+		return task.taskName
+			.replace(/\s+/g, "")
+			.toUpperCase()
+			.includes(search_key.replace(/\s+/g, "").toUpperCase());
+	};
+
+	//task selector
+	const {
+		data: tasks_list = [],
+		isFetching,
+		isLoading,
+		isError,
+		error,
+		is,
+	} = useGetTasksQuery(
+		{
+			project_ids:
+				selected_projects?.length > 0
+					? selected_projects
+					: [0],
+		},
+		{
+			skip: isSkip,
+		}
+	);
+
+	//
+	useEffect(() => {
+		setIsSkip(false);
+	}, [selected_projects]);
+
+	//decide ui
+	let content = null;
+	if (isFetching && isLoading)
+		content = (
+			<div>
+				<p>Loading...</p>
+			</div>
+		);
+	else if (!isLoading && isError)
+		content = (
+			<div>
+				<p>There have some problem</p>
+			</div>
+		);
+	else if (
+		!isFetching &&
+		!isLoading &&
+		!isError &&
+		tasks_list?.length == 0
+	) {
+		content = (
+			<div>
+				<p>Tasks not found</p>
+			</div>
+		);
+	} else if (!isLoading && !isError && tasks_list?.length > 0) {
+		content = tasks_list
+			?.filter(handleSearch)
+			?.map((task) => <Task key={task.id} task={task} />);
+	}
+
 	return (
-		<div class="lg:pl-[16rem] 2xl:pl-[23rem]">
-			<main class="relative z-20 max-w-3xl mx-auto rounded-lg xl:max-w-none">
-				<div class="justify-between mb-10 space-y-2 md:flex md:space-y-0">
-					<Link to="/addtask" class="lws-addnew group">
+		<div className="lg:pl-[16rem] 2xl:pl-[23rem]">
+			<main className="relative z-20 max-w-3xl mx-auto rounded-lg xl:max-w-none">
+				<div className="justify-between mb-10 space-y-2 md:flex md:space-y-0">
+					<Link
+						to="/addtask"
+						className="lws-addnew group"
+					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							fill="none"
 							viewBox="0 0 24 24"
 							stroke-width="1.5"
 							stroke="currentColor"
-							class="w-6 h-6 group-hover:text-indigo-500"
+							className="w-6 h-6 group-hover:text-indigo-500"
 						>
 							<path
 								stroke-linecap="round"
@@ -23,47 +98,47 @@ const TasksList = () => {
 							/>
 						</svg>
 
-						<span class="group-hover:text-indigo-500">
+						<span className="group-hover:text-indigo-500">
 							Add New
 						</span>
 					</Link>
 				</div>
 
-				<div class="lws-task-list">
-					<Task />
+				<div className="lws-task-list">
+					{content}
 
-					{/* <div class="lws-task">
-            <div class="flex items-center gap-2 text-slate">
-              <h2 class="lws-date">28</h2>
-              <h4 class="lws-month">March</h4>
+					{/* <div className="lws-task">
+            <div className="flex items-center gap-2 text-slate">
+              <h2 className="lws-date">28</h2>
+              <h4 className="lws-month">March</h4>
             </div>
 
-            <div class="lws-taskContainer">
-              <h1 class="lws-task-title">Disable the 'Add Flight' button</h1>
-              <span class="lws-task-badge color-flight">Flight Booking</span>
+            <div className="lws-taskContainer">
+              <h1 className="lws-task-title">Disable the 'Add Flight' button</h1>
+              <span className="lws-task-badge color-flight">Flight Booking</span>
             </div>
 
-            <div class="flex items-center gap-4">
-              <div class="flex items-center gap-2">
-                <img src="./images/avatars/salahuddin.png" class="team-avater" />
-                <p class="lws-task-assignedOn">Md Salahuddin</p>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <img src="./images/avatars/salahuddin.png" className="team-avater" />
+                <p className="lws-task-assignedOn">Md Salahuddin</p>
               </div>
-              <button class="lws-delete">
+              <button className="lws-delete">
                 <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                  class="w-6 h-6 text-gray-600 hover:text-red-600">
+                  className="w-6 h-6 text-gray-600 hover:text-red-600">
                   <path stroke-linecap="round" stroke-linejoin="round"
                     d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                 </svg>
               </button>
               <!-- When a task will be completed , the edit button will not shown to the ui -->
-              <!-- <button class="lws-edit">
+              <!-- <button className="lws-edit">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke-width="1.5"
                     stroke="currentColor"
-                    class="w-6 h-6 text-gray-600 hover:text-indigo-600"
+                    className="w-6 h-6 text-gray-600 hover:text-indigo-600"
                   >
                     <path
                       stroke-linecap="round"
@@ -72,7 +147,7 @@ const TasksList = () => {
                     />
                   </svg>
                 </button> -->
-              <select class="lws-status">
+              <select className="lws-status">
                 <option value="pending">Pending</option>
                 <option value="inProgress">In Progress</option>
                 <option value="complete" selected>Completed</option>
@@ -80,37 +155,37 @@ const TasksList = () => {
             </div>
           </div>
 
-          <div class="lws-task">
-            <div class="flex items-center gap-2 text-slate">
-              <h2 class="lws-date">26</h2>
-              <h4 class="lws-month">March</h4>
+          <div className="lws-task">
+            <div className="flex items-center gap-2 text-slate">
+              <h2 className="lws-date">26</h2>
+              <h4 className="lws-month">March</h4>
             </div>
 
-            <div class="lws-taskContainer">
-              <h1 class="lws-task-title">Add Counter</h1>
-              <span class="lws-task-badge color-productCart">Product Cart</span>
+            <div className="lws-taskContainer">
+              <h1 className="lws-task-title">Add Counter</h1>
+              <span className="lws-task-badge color-productCart">Product Cart</span>
             </div>
 
-            <div class="flex items-center gap-4">
-              <div class="flex items-center gap-2">
-                <img src="./images/avatars/sumit.png" class="team-avater" />
-                <p class="lws-task-assignedOn">Sumit Saha</p>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <img src="./images/avatars/sumit.png" className="team-avater" />
+                <p className="lws-task-assignedOn">Sumit Saha</p>
               </div>
-              <button class="lws-delete">
+              <button className="lws-delete">
                 <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                  class="w-6 h-6 text-gray-600 hover:text-red-600">
+                  className="w-6 h-6 text-gray-600 hover:text-red-600">
                   <path stroke-linecap="round" stroke-linejoin="round"
                     d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                 </svg>
               </button>
-              <button class="lws-edit">
+              <button className="lws-edit">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                  stroke="currentColor" class="w-6 h-6 text-gray-600 hover:text-indigo-600">
+                  stroke="currentColor" className="w-6 h-6 text-gray-600 hover:text-indigo-600">
                   <path stroke-linecap="round" stroke-linejoin="round"
                     d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                 </svg>
               </button>
-              <select class="lws-status">
+              <select className="lws-status">
                 <option value="pending">Pending</option>
                 <option value="inProgress selected">In Progress</option>
                 <option value="complete">Completed</option>
@@ -118,37 +193,37 @@ const TasksList = () => {
             </div>
           </div>
 
-          <div class="lws-task">
-            <div class="flex items-center gap-2 text-slate">
-              <h2 class="lws-date">26</h2>
-              <h4 class="lws-month">March</h4>
+          <div className="lws-task">
+            <div className="flex items-center gap-2 text-slate">
+              <h2 className="lws-date">26</h2>
+              <h4 className="lws-month">March</h4>
             </div>
 
-            <div class="lws-taskContainer">
-              <h1 class="lws-task-title">Write a book</h1>
-              <span class="lws-task-badge color-bookstore">Book Store</span>
+            <div className="lws-taskContainer">
+              <h1 className="lws-task-title">Write a book</h1>
+              <span className="lws-task-badge color-bookstore">Book Store</span>
             </div>
 
-            <div class="flex items-center gap-4">
-              <div class="flex items-center gap-2">
-                <img src="./images/avatars/ferdous.png" class="team-avater" />
-                <p class="lws-task-assignedOn">Ferdous Hassan</p>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <img src="./images/avatars/ferdous.png" className="team-avater" />
+                <p className="lws-task-assignedOn">Ferdous Hassan</p>
               </div>
-              <button class="lws-delete">
+              <button className="lws-delete">
                 <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                  class="w-6 h-6 text-gray-600 hover:text-red-600">
+                  className="w-6 h-6 text-gray-600 hover:text-red-600">
                   <path stroke-linecap="round" stroke-linejoin="round"
                     d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                 </svg>
               </button>
-              <button class="lws-edit">
+              <button className="lws-edit">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                  stroke="currentColor" class="w-6 h-6 text-gray-600 hover:text-indigo-600">
+                  stroke="currentColor" className="w-6 h-6 text-gray-600 hover:text-indigo-600">
                   <path stroke-linecap="round" stroke-linejoin="round"
                     d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                 </svg>
               </button>
-              <select class="lws-status">
+              <select className="lws-status">
                 <option value="pending" selected>Pending</option>
                 <option value="inProgress">In Progress</option>
                 <option value="complete">Completed</option>
@@ -156,37 +231,37 @@ const TasksList = () => {
             </div>
           </div>
 
-          <div class="lws-task">
-            <div class="flex items-center gap-2 text-slate">
-              <h2 class="lws-date">26</h2>
-              <h4 class="lws-month">March</h4>
+          <div className="lws-task">
+            <div className="flex items-center gap-2 text-slate">
+              <h2 className="lws-date">26</h2>
+              <h4 className="lws-month">March</h4>
             </div>
 
-            <div class="lws-taskContainer">
-              <h1 class="lws-task-title">Post blogs every day</h1>
-              <span class="lws-task-badge color-blog">Blog Application</span>
+            <div className="lws-taskContainer">
+              <h1 className="lws-task-title">Post blogs every day</h1>
+              <span className="lws-task-badge color-blog">Blog Application</span>
             </div>
 
-            <div class="flex items-center gap-4">
-              <div class="flex items-center gap-2">
-                <img src="./images/avatars/sadh.png" class="team-avater" />
-                <p class="lws-task-assignedOn">Sadh Hassan</p>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <img src="./images/avatars/sadh.png" className="team-avater" />
+                <p className="lws-task-assignedOn">Sadh Hassan</p>
               </div>
-              <button class="lws-delete">
+              <button className="lws-delete">
                 <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                  class="w-6 h-6 text-gray-600 hover:text-red-600">
+                  className="w-6 h-6 text-gray-600 hover:text-red-600">
                   <path stroke-linecap="round" stroke-linejoin="round"
                     d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                 </svg>
               </button>
-              <button class="lws-edit">
+              <button className="lws-edit">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                  stroke="currentColor" class="w-6 h-6 text-gray-600 hover:text-indigo-600">
+                  stroke="currentColor" className="w-6 h-6 text-gray-600 hover:text-indigo-600">
                   <path stroke-linecap="round" stroke-linejoin="round"
                     d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                 </svg>
               </button>
-              <select class="lws-status">
+              <select className="lws-status">
                 <option value="pending" selected>Pending</option>
                 <option value="inProgress">In Progress</option>
                 <option value="complete">Completed</option>
@@ -194,37 +269,37 @@ const TasksList = () => {
             </div>
           </div>
 
-          <div class="lws-task">
-            <div class="flex items-center gap-2 text-slate">
-              <h2 class="lws-date">26</h2>
-              <h4 class="lws-month">March</h4>
+          <div className="lws-task">
+            <div className="flex items-center gap-2 text-slate">
+              <h2 className="lws-date">26</h2>
+              <h4 className="lws-month">March</h4>
             </div>
 
-            <div class="lws-taskContainer">
-              <h1 class="lws-task-title">Find 10 Jobs</h1>
-              <span class="lws-task-badge color-jobFinder">Job Finder</span>
+            <div className="lws-taskContainer">
+              <h1 className="lws-task-title">Find 10 Jobs</h1>
+              <span className="lws-task-badge color-jobFinder">Job Finder</span>
             </div>
 
-            <div class="flex items-center gap-4">
-              <div class="flex items-center gap-2">
-                <img src="./images/avatars/akash.png" class="team-avater" />
-                <p class="lws-task-assignedOn">Akash Ahmed</p>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <img src="./images/avatars/akash.png" className="team-avater" />
+                <p className="lws-task-assignedOn">Akash Ahmed</p>
               </div>
-              <button class="lws-delete">
+              <button className="lws-delete">
                 <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                  class="w-6 h-6 text-gray-600 hover:text-red-600">
+                  className="w-6 h-6 text-gray-600 hover:text-red-600">
                   <path stroke-linecap="round" stroke-linejoin="round"
                     d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                 </svg>
               </button>
-              <button class="lws-edit">
+              <button className="lws-edit">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                  stroke="currentColor" class="w-6 h-6 text-gray-600 hover:text-indigo-600">
+                  stroke="currentColor" className="w-6 h-6 text-gray-600 hover:text-indigo-600">
                   <path stroke-linecap="round" stroke-linejoin="round"
                     d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                 </svg>
               </button>
-              <select class="lws-status">
+              <select className="lws-status">
                 <option value="pending" selected>Pending</option>
                 <option value="inProgress">In Progress</option>
                 <option value="complete">Completed</option>

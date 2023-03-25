@@ -1,65 +1,30 @@
 import React from "react";
+import { useGetTeamsQuery } from "../../../features/teams/teamsApi";
 
 const Members = () => {
+	const {
+		data: tem_members = [],
+		isLoading,
+		isError,
+	} = useGetTeamsQuery();
 	return (
-		<div class="mt-8">
-			<h3 class="text-xl font-bold">Team Members</h3>
-			<div class="mt-3 space-y-4">
-				<div class="checkbox-container">
-					<img
-						src="/images/avatars/sumit.png"
-						class="team-avater"
-					/>
-					<p class="label">Sumit Saha</p>
-				</div>
-
-				<div class="checkbox-container">
-					<img
-						src="/images/avatars/sadh.png"
-						class="team-avater"
-					/>
-					<p class="label">Sadh Hasan</p>
-				</div>
-
-				<div class="checkbox-container">
-					<img
-						src="/images/avatars/akash.png"
-						class="team-avater"
-					/>
-					<p class="label">Akash Ahmed</p>
-				</div>
-
-				<div class="checkbox-container">
-					<img
-						src="/images/avatars/salahuddin.png"
-						class="team-avater"
-					/>
-					<p class="label">Md Salahuddin</p>
-				</div>
-
-				<div class="checkbox-container">
-					<img
-						src="/images/avatars/riyadh.png"
-						class="team-avater"
-					/>
-					<p class="label">Riyadh Hassan</p>
-				</div>
-
-				<div class="checkbox-container">
-					<img
-						src="/images/avatars/ferdous.png"
-						class="team-avater"
-					/>
-					<p class="label">Ferdous Hassan</p>
-				</div>
-
-				<div class="checkbox-container">
-					<img
-						src="/images/avatars/almas.png"
-						class="team-avater"
-					/>
-					<p class="label">Arif Almas</p>
-				</div>
+		<div className="mt-8">
+			<h3 className="text-xl font-bold">Team Members</h3>
+			<div className="mt-3 space-y-4">
+				{tem_members?.map((member) => {
+					return (
+						<div className="checkbox-container">
+							<img
+								src={member.avatar}
+								className="team-avater"
+								alt={member.name}
+							/>
+							<p className="label">
+								{member.name}
+							</p>
+						</div>
+					);
+				})}
 			</div>
 		</div>
 	);

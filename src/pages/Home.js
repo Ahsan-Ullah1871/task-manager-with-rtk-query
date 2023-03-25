@@ -4,7 +4,7 @@ import TasksList from "../components/Home/TasksList";
 
 const Home = () => {
 	return (
-		<div class="container relative">
+		<div className="container relative">
 			<Sidebar />
 			<TasksList />
 		</div>

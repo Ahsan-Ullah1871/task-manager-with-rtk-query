@@ -9,7 +9,7 @@ import EditTask from "./pages/EditTask";
 function App() {
 	return (
 		<BrowserRouter>
-			<div class="text-[#111827]">
+			<div className="text-[#111827]">
 				<Header />
 
 				<Routes>

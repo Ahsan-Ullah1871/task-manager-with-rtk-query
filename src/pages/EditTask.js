@@ -13,8 +13,6 @@ const EditTask = () => {
 	//
 	const navigate = useNavigate();
 
-	// selected projects
-	const { selected_projects } = useSelector((state) => state.projects);
 	//search_key
 
 	//Get task mutation router
@@ -42,7 +40,6 @@ const EditTask = () => {
 		editTask({
 			task_id: taskID,
 			data: formState,
-			selected_projects,
 		});
 	};
 

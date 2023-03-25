@@ -9,8 +9,6 @@ import {
 
 const Task = ({ task = {} }) => {
 	const navigate = useNavigate();
-	// selected projects
-	const { selected_projects } = useSelector((state) => state.projects);
 
 	//edit task
 	const [editTask, { isSuccess, isError, error, isLoading }] =
@@ -20,7 +18,6 @@ const Task = ({ task = {} }) => {
 		editTask({
 			task_id: task.id,
 			data: { status: e.target.value },
-			selected_projects,
 		});
 	};
 
@@ -37,7 +34,6 @@ const Task = ({ task = {} }) => {
 	const handleDelete = () => {
 		deleteTask({
 			task_id: task.id,
-			selected_projects,
 		});
 	};
 

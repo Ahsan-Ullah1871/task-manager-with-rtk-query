@@ -88,9 +88,9 @@
     {
       "taskName": "Play football",
       "teamMember": {
-        "name": "Riyadh Hassan",
-        "avatar": "/images/avatars/riyadh.png",
-        "id": 5
+        "name": "Md Salahuddin",
+        "avatar": "/images/avatars/salahuddin.png",
+        "id": 4
       },
       "project": {
         "id": 3,
@@ -102,36 +102,20 @@
       "status": "inProgress"
     },
     {
-      "taskName": "Fix a bug",
+      "taskName": "Fix a bug like programmer",
       "teamMember": {
-        "name": "Md Salahuddin",
-        "avatar": "/images/avatars/salahuddin.png",
-        "id": 4
+        "name": "Riyadh Hassan",
+        "avatar": "/images/avatars/riyadh.png",
+        "id": 5
       },
       "deadline": "2023-03-18",
-      "project": {
-        "id": 4,
-        "projectName": "Book Store",
-        "colorClass": "color-bookstore"
-      },
-      "id": 5,
-      "status": "inProgress"
-    },
-    {
-      "taskName": "Play hocki",
-      "teamMember": {
-        "name": "Akash Ahmed",
-        "avatar": "/images/avatars/akash.png",
-        "id": 3
-      },
       "project": {
         "id": 1,
         "projectName": "Scoreboard",
         "colorClass": "color-scoreboard"
       },
-      "deadline": "2023-03-30",
-      "id": 6,
-      "status": "inProgress"
+      "id": 5,
+      "status": "pending"
     },
     {
       "taskName": "Iftar party",
@@ -141,13 +125,13 @@
         "id": 2
       },
       "project": {
-        "id": 2,
-        "projectName": "Flight Booking",
-        "colorClass": "color-flight"
+        "id": 3,
+        "projectName": "Product Cart",
+        "colorClass": "color-productCart"
       },
       "deadline": "2023-03-31",
       "id": 7,
-      "status": "pending"
+      "status": "inProgress"
     }
   ]
 }

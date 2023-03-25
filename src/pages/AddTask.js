@@ -8,8 +8,6 @@ const AddTask = () => {
 	//
 	const navigate = useNavigate();
 
-	// selected projects
-	const { selected_projects } = useSelector((state) => state.projects);
 	//Add task mutation router
 	const [addTask, { data, isLoading, isSuccess, isError, error }] =
 		useAddTaskMutation();
@@ -19,7 +17,7 @@ const AddTask = () => {
 	// handle submit
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		addTask({ data: formState, selected_projects });
+		addTask({ data: formState });
 	};
 
 	//

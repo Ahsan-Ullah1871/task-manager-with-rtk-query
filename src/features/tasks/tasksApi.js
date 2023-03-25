@@ -4,17 +4,7 @@ export const tasksApi = apiSlice.injectEndpoints({
 	endpoints: (builder) => ({
 		//getProjects:
 		getTasks: builder.query({
-			query: ({ project_ids }) => {
-				let query = "";
-				query +=
-					project_ids?.length > 0
-						? `project.id=${project_ids.join(
-								"&project.id="
-						  )}`
-						: "";
-
-				return `/tasks?${query}`;
-			},
+			query: () => `/tasks`,
 		}),
 
 		//getTask:
@@ -33,7 +23,7 @@ export const tasksApi = apiSlice.injectEndpoints({
 			}),
 
 			async onQueryStarted(
-				{ task_id, selected_projects },
+				{ task_id },
 				{ queryFulfilled, dispatch }
 			) {
 				try {
@@ -45,10 +35,7 @@ export const tasksApi = apiSlice.injectEndpoints({
 						dispatch(
 							apiSlice.util.updateQueryData(
 								"getTasks",
-								{
-									project_ids:
-										selected_projects,
-								},
+								undefined,
 								(draft) => {
 									return draft.map(
 										(
@@ -98,10 +85,7 @@ export const tasksApi = apiSlice.injectEndpoints({
 				body: data,
 			}),
 
-			async onQueryStarted(
-				{ selected_projects },
-				{ queryFulfilled, dispatch }
-			) {
+			async onQueryStarted(arg, { queryFulfilled, dispatch }) {
 				try {
 					const { data: new_task } =
 						await queryFulfilled;
@@ -110,10 +94,7 @@ export const tasksApi = apiSlice.injectEndpoints({
 						dispatch(
 							apiSlice.util.updateQueryData(
 								"getTasks",
-								{
-									project_ids:
-										selected_projects,
-								},
+								undefined,
 								(draft) => {
 									draft.push(
 										new_task
@@ -136,16 +117,14 @@ export const tasksApi = apiSlice.injectEndpoints({
 			}),
 
 			async onQueryStarted(
-				{ task_id, selected_projects },
+				{ task_id },
 				{ queryFulfilled, dispatch }
 			) {
 				//Optimistic update mutation
 				const patchResult = dispatch(
 					apiSlice.util.updateQueryData(
 						"getTasks",
-						{
-							project_ids: selected_projects,
-						},
+						undefined,
 						(draft) => {
 							return draft.filter(
 								(item) =>
